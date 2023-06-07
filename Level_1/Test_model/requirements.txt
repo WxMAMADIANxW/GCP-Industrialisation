@@ -13,6 +13,6 @@ numpy
 pandas
 fsspec
 gcsfs
-tensorflow==2.3.0
-sklearn
+tensorflow-cpu==2.5.0
+scikit-learn
 protobuf==3.19.0

@@ -9,8 +9,15 @@ if __name__ == '__main__':
                         type=str, help='Model dir.')
     parser.add_argument('--preprocess-data-dir', dest='preprocess-data-dir', type=str,
                         help='Training data GCS or BQ URI set during Vertex AI training.')
+    #
     parser.add_argument('--model-validation-dir', dest='model-validation-dir',
                         type=str, help='valid Model dir.')
+    #
+    parser.add_argument('--performance-threshold', dest='performance-threshold',
+                        type=str, help='valid Model dir.')
+    parser.add_argument('--output-performance-model', dest='output-performance-model',
+                        type=str, help='valid Model dir.')
+
     # Model training args.
     parser.add_argument('--load_json', dest='load_json', default='confg.json',
                         help='Load settings from file in json format. Command line options override values in file.')

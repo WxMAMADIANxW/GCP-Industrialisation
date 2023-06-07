@@ -1,9 +1,5 @@
-{"PROJECT_ID": "sound-splicer-351114",
-  "bucket": "sound-splicer-351114-machine-learning",
-  "uri_data": "raw-data/glove.twitter.27B.50d.txt",
-  "filters": 64,
+{ "filters": 64,
   "dropout": 0.5,
   "n-checkpoints": 1,
   "batch-size": 128,
-  "model-dir" : "gs://sound-splicer-351114-machine-learning/level-1-models/candidate_models"}
-
+  "model-dir" : "gs://rare-result-248415-machine-learning/level-1-models/candidate_models"}

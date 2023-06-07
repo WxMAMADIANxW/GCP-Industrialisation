@@ -1,4 +1,3 @@
-import os
 import argparse
 import json
 
@@ -9,8 +8,7 @@ if __name__ == '__main__':
     # Vertex custom container training args. These are set by Vertex AI during training but can also be overwritten.
     parser.add_argument('--model-dir', dest='model-dir',
                         type=str, help='Model dir.')
-    parser.add_argument('--bucket', dest='bucket',
-                        default="'rare-result-248415-tweet-sentiment-analysis'", type=str, help='bucket name.')
+    parser.add_argument('--bucket', dest='bucket', type=str, help='bucket name.')
     parser.add_argument('--preprocess-data-dir', dest='preprocess-data-dir', type=str,
                         help='Training data GCS or BQ URI set during Vertex AI training.')
     parser.add_argument('--temp-dir', dest='temp-dir', type=str, help='Temp dir set during Vertex AI training.')
@@ -19,6 +17,9 @@ if __name__ == '__main__':
                         help='Number of examples during each training iteration.')
     parser.add_argument('--load_json', dest='load_json', default='confg.json',
                         help='Load settings from file in json format. Command line options override values in file.')
+
+    parser.add_argument('--output-model-dir', dest='output-model-dir', type=str,
+                        help='Output file')
 
     args = parser.parse_args()
     if args.load_json:

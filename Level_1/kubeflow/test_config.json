@@ -1,0 +1,5 @@
+{ "model_validation_dir" : "gs://rare-result-248415-machine-learning/level-1-models/valid_models/valid_model",
+  "performance_threshold" :  {"acc":0.75,
+                              "std": 0.3},
+  "load_json": "confg.json"
+}

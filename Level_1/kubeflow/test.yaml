@@ -1,0 +1,36 @@
+name: test
+description: description test
+
+inputs:
+- {name: model-dir, type: String, description: 'Model dir'}
+- {name: preprocess-data-dir, type: String, description: 'directory where to save preprocess data'}
+- {name: model-validation-dir, type: String, description: 'Temp dir set during Vertex AI training'}
+- {name: performance-threshold, type: Dict, description: 'Embedding data GCS or GQ URI set during Vertex AI training'}
+- {name: load_json, type: String, description: 'Temp dir set during Vertex AI training'}
+
+outputs:
+- {name: output-performance-model, type: String, description: 'Temp dir set during Vertex AI training'}
+
+implementation:
+  container:
+    image: gcr.io/rare-result-248415/kubeflow-repo/test-image@sha256:a44dd0b3a3fc4a93ce0da941ee89ed9e2b530526e4ce760e1c1d360b08bffd10
+    # command is a list of strings (command-line arguments).
+    # The YAML language has two syntaxes for lists and you can use either of them.
+    # Here we use the "flow syntax" - comma-separated strings inside square brackets.
+    command: [
+      python3,
+      # Path of the program inside the container
+      /test/task.py,
+      --model-dir,
+      {inputValue: model-dir},
+      --preprocess-data-dir,
+      {inputValue: preprocess-data-dir},
+      --model-validation-dir,
+      {inputValue: model-validation-dir},
+      --performance-threshold,
+      {inputValue: performance-threshold},
+      --load_json,
+      {inputValue: load_json},
+      --output-performance-model,
+      {outputPath: output-performance-model}
+    ]

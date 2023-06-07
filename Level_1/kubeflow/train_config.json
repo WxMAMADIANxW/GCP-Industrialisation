@@ -1,0 +1,5 @@
+{ "bucket": "",
+  "temp_dir":"",
+  "batch_size":128,
+  "load_json":"confg.json",
+  "model_dir" : "gs://rare-result-248415-machine-learning/level-1-models/candidate_models"}

@@ -1,0 +1,48 @@
+name: preprocess
+description: description preprocess
+
+inputs:
+- {name: model-dir, type: String, description: 'Model dir'}
+- {name: bucket, type: String, description: 'bucket name'}
+- {name: preprocess-data-dir, type: String, description: 'directory where to save preprocess data'}
+- {name: input-data-uri, type: String, description: 'The start date for training tweet'}
+- {name: input-start-date, type: String, description: 'The start date for training tweet'}
+- {name: input-end-date, type: String, description: 'The end date for training tweet'}
+- {name: uri-data, type: String, description: 'Embedding data GCS or GQ URI set during Vertex AI training'}
+- {name: temp-dir, type: String, description: 'Temp dir set during Vertex AI training'}
+- {name: load_json, type: String, description: 'Temp dir set during Vertex AI training'}
+
+outputs:
+- {name: output-dir-path, type: String, description: 'Temp dir set during Vertex AI training'}
+
+implementation:
+  container:
+    image: gcr.io/rare-result-248415/kubeflow-repo/preprocess-image@sha256:659e2ee4454a748d17e27bfe21b9e232f62a569a108ad645d3e6c9df21bf7580
+    # command is a list of strings (command-line arguments).
+    # The YAML language has two syntaxes for lists and you can use either of them.
+    # Here we use the "flow syntax" - comma-separated strings inside square brackets.
+    command: [
+      python3,
+      # Path of the program inside the container
+      /Preprocess/run.py,
+      --model-dir,
+      {inputValue: model-dir},
+      --bucket,
+      {inputValue: bucket},
+      --preprocess-data-dir,
+      {inputValue: preprocess-data-dir},
+      --input-data-uri,
+      {inputValue: input-data-uri},
+      --input-start-date,
+      {inputValue: input-start-date},
+      --input-end-date,
+      {inputValue: input-end-date},
+      --uri-data,
+      {inputValue: uri-data},
+      --temp-dir,
+      {inputValue: temp-dir},
+      --load_json,
+      {inputValue: load_json},
+      --output-dir-path,
+      {outputPath: output-dir-path}
+    ]

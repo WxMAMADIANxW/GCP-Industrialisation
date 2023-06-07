@@ -1,7 +1,5 @@
-{"PROJECT_ID": "sound-splicer-351114",
-  "bucket": "sound-splicer-351114-machine-learning",
-  "model-validation-dir" : "gs://sound-splicer-351114-machine-learning/level-1-models/valid_models/valid_model",
+{ "model-validation-dir" : "gs://rare-result-248415-machine-learning/level-1-models/valid_models/valid_model",
   "performance-threshold" :  {"acc":0.75,
-                              "std": 0.3}
+                              "std": 0.3},
+  "load_json": "confg.json"
 }
-

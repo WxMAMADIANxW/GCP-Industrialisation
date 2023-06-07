@@ -1,15 +1,18 @@
-import os
-import pandas as pd
-import numpy as np
-from preprocess import TextPreprocessor
 import argparse
-import logging
-import json
-import pickle
-from sklearn.model_selection import train_test_split
 import datetime
+import json
+import logging
+import os
+import pickle
+from pathlib import Path
 
+import numpy as np
+import pandas as pd
 from google.cloud.storage import Client
+from preprocess import TextPreprocessor
+from sklearn.model_selection import train_test_split
+
+logging.getLogger().setLevel('DEBUG')
 
 CLASSES = {'negative': 0, 'positive': 1}  # label-to-int mapping
 VOCAB_SIZE = 25000  # Limit on the number vocabulary size used for tokenization
@@ -128,7 +131,7 @@ def split_input(sents, labels, test_size=0.2):
 
 def run(hparams):
     logging.debug('preprocessing data Start')
-    EMBEDDING_DIM = 50
+    EMBEDDING_DIM = 25
     logging.debug('loading input data')
     nowTime = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
     input_data = read_data_uri(hparams['input-data-uri'],hparams['input-start-date'],hparams['input-end-date'])
@@ -136,57 +139,44 @@ def run(hparams):
     logging.debug('preprocessing input data Done')
 
     logging.debug('loading embedding data')
-    embedding_matrix = read_embbeded_data_uri(hparams['bucket'], hparams['uri_data'], hparams['temp-dir'], processor,
+    embedding_matrix = read_embbeded_data_uri(hparams['bucket'], hparams['uri-data'], hparams['temp-dir'], processor,
                                               EMBEDDING_DIM)
     logging.debug('loading embedding done')
 
     y_train, y_test, train_vectorized, x_test = split_input(vectorized_input, label)
 
-    pd.DataFrame(y_train).to_csv(hparams['preprocess-data-dir'] + '/preprocess-data-' + nowTime + '/y_train.csv',
-                                 index=False, header=False)
-    logging.debug('saved preprocessed label data in ' + hparams[
-        'preprocess-data-dir'] + '/preprocess-data-' + nowTime + '/y_train.csv')
+    save_dir = hparams['preprocess-data-dir'] + '/preprocess-data-' + nowTime + '/'
+    logging.info(f'Save directory: {save_dir}')
 
-    pd.DataFrame(y_test).to_csv(hparams['preprocess-data-dir'] + '/preprocess-data-' + nowTime + '/y_test.csv',
-                                index=False, header=False)
-    logging.debug('saved preprocessed label data in ' + hparams[
-        'preprocess-data-dir'] + '/preprocess-data-' + nowTime + '/y_test.csv')
+    pd.DataFrame(y_train).to_csv(save_dir + 'y_train.csv', index=False, header=False)
+    logging.debug('saved preprocessed label data in ' + save_dir + 'y_train.csv')
 
-    pd.DataFrame(train_vectorized).to_csv(
-        hparams['preprocess-data-dir'] + '/preprocess-data-' + nowTime + '/x_train.csv', index=False, header=False)
-    logging.debug('saved preprocessed label data in ' + hparams[
-        'preprocess-data-dir'] + '/preprocess-data-' + nowTime + '/x_train.csv')
+    pd.DataFrame(y_test).to_csv(save_dir + 'y_test.csv', index=False, header=False)
+    logging.debug('saved preprocessed label data in ' + save_dir + 'y_test.csv')
 
-    pd.DataFrame(x_test).to_csv(hparams['preprocess-data-dir'] + '/preprocess-data-' + nowTime + '/x_test.csv',
-                                index=False, header=False)
-    logging.debug('saved preprocessed label data in ' + hparams[
-        'preprocess-data-dir'] + '/preprocess-data-' + nowTime + '/x_test.csv')
+    pd.DataFrame(train_vectorized).to_csv(save_dir + 'x_train.csv', index=False, header=False)
+    logging.debug('saved preprocessed label data in ' + save_dir + 'x_train.csv')
 
-    input_data.to_csv(hparams['preprocess-data-dir'] + '/preprocess-data-' + nowTime + '/input.csv', index=False)
-    logging.debug('saved preprocessed features data in ' + hparams[
-        'preprocess-data-dir'] + '/preprocess-data-' + nowTime + '/input.csv')
+    pd.DataFrame(x_test).to_csv(save_dir + 'x_test.csv', index=False, header=False)
+    logging.debug('saved preprocessed label data in ' + save_dir +'x_test.csv')
 
-    pd.DataFrame(label).to_csv(hparams['preprocess-data-dir'] + '/preprocess-data-' + nowTime + '/label.csv',
-                               index=False, header=False)
-    logging.debug('saved preprocessed label data in ' + hparams[
-        'preprocess-data-dir'] + '/preprocess-data-' + nowTime + '/label.csv')
+    input_data.to_csv(save_dir + 'input.csv', index=False)
+    logging.debug('saved preprocessed features data in ' + save_dir + 'input.csv')
 
-    pd.DataFrame(vectorized_input).to_csv(
-        hparams['preprocess-data-dir'] + '/preprocess-data-' + nowTime + '/vectorized_input.csv', index=False,
-        header=False)
-    logging.debug(
-        'saved preprocessed and vectorized input data in ' + hparams[
-            'preprocess-data-dir'] + '/preprocess-data-' + nowTime + '/vectorized_input.csv')
+    pd.DataFrame(label).to_csv(save_dir + 'label.csv', index=False, header=False)
+    logging.debug('saved preprocessed label data in ' + save_dir + 'label.csv')
 
-    pd.DataFrame(embedding_matrix).to_csv(
-        hparams['preprocess-data-dir'] + '/preprocess-data-' + nowTime + '/embedding_matrix.csv', index=False,
-        header=False)
-    logging.debug('saved embedding data in ' + hparams[
-        'preprocess-data-dir'] + '/preprocess-data-' + nowTime + '/embedding_matrix.csv')
+    pd.DataFrame(vectorized_input).to_csv(save_dir + 'vectorized_input.csv',
+                                          index=False, header=False)
+    logging.debug('saved preprocessed and vectorized input data in ' + save_dir + 'vectorized_input.csv')
 
-    ouputfile = open("preprocess-data-dir.txt", "w")
-    ouputfile.write(str(hparams['preprocess-data-dir'] + '/preprocess-data-' + nowTime))
+    pd.DataFrame(embedding_matrix).to_csv(save_dir + 'embedding_matrix.csv', index=False, header=False)
+    logging.debug('saved embedding data in ' + save_dir + 'embedding_matrix.csv')
 
+    Path(hparams['output-dir-path']).parent.mkdir(parents=True, exist_ok=True)
+    with open(hparams['output-dir-path'], "w") as output_file:
+        output_file.write(save_dir)
+        logging.info(f'output-dir-path: {save_dir}')
 
 if __name__ == '__main__':
 
@@ -194,11 +184,10 @@ if __name__ == '__main__':
     # Vertex custom container training args. These are set by Vertex AI during training but can also be overwritten.
     parser.add_argument('--model-dir', dest='model-dir', type=str, help='Model dir.')
 
-    parser.add_argument('--bucket', dest='bucket',
-                        default="'rare-result-248415-tweet-sentiment-analysis'", type=str, help='bucket name.')
+    parser.add_argument('--bucket', dest='bucket', type=str, help='bucket name.')
 
     parser.add_argument('--preprocess-data-dir', dest='preprocess-data-dir',
-                        default="", type=str, help="dirototory where to save preprocess data ")
+                        type=str, help="directory where to save preprocess data ")
 
     parser.add_argument('--input-data-uri', dest='input-data-uri', type=str,
                         help='Training data GCS or BQ URI set during Vertex AI training.')
@@ -209,11 +198,14 @@ if __name__ == '__main__':
     parser.add_argument('--input-end-date', dest='input-end-date', type=str,
                         help='The end date for training tweet.')
 
-    parser.add_argument('--uri_data', dest='validation-data-uri', type=str,
+    parser.add_argument('--uri-data', dest='uri-data', type=str,
                         help='embedding data GCS or BQ URI set during Vertex AI training.')
 
     parser.add_argument('--temp-dir', dest='temp-dir', type=str,
                         help='Temp dir set during Vertex AI training.')
+
+    parser.add_argument('--output-dir-path', dest='output-dir-path', type=str,
+                        help='Output file')
 
     parser.add_argument('--load_json', dest='load_json', default='confg.json',
                         help='Load settings from file in json format. Command line options override values in file.')

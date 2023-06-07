@@ -1,9 +1,12 @@
+import datetime
 import logging
 import tempfile
-import tensorflow as tf
+import os
+from pathlib import Path
+
 import pandas as pd
+import tensorflow as tf
 from sklearn.model_selection import train_test_split
-import datetime
 
 sentiment_mapping = {
     0: "negative",
@@ -23,9 +26,9 @@ def read_preprocess_data(uri):
     Returns:
       x_train, y_train, embedding_matrix(Pandas Data Frame): Training , test and embedded dataset.
     """
-    x_train = pd.read_csv(uri + '/x_train.csv', encoding="latin1", header=None)
-    y_train = pd.read_csv(uri + '/y_train.csv', encoding="latin1", header=None).to_numpy()
-    embedding_matrix = pd.read_csv(uri + '/embedding_matrix.csv', encoding="latin1", header=None).to_numpy()
+    x_train = pd.read_csv(os.path.join(uri, 'x_train.csv'), encoding="latin1", header=None)
+    y_train = pd.read_csv(os.path.join(uri, 'y_train.csv'), encoding="latin1", header=None).to_numpy()
+    embedding_matrix = pd.read_csv(os.path.join(uri, 'embedding_matrix.csv'), encoding="latin1", header=None).to_numpy()
 
     return x_train, y_train, embedding_matrix
 
@@ -92,7 +95,7 @@ def train_evaluate_explain_model(hparams):
       history(tf.keras.callbacks.History): Keras callback that records training event history.
     """
 
-    EMBEDDING_DIM = 50
+    EMBEDDING_DIM = 25
     POOL_SIZE = 3
     KERNEL_SIZES = [2, 5, 8]
 
@@ -132,9 +135,11 @@ def train_evaluate_explain_model(hparams):
     )
 
     # Create a temp directory to save intermediate TF SavedModel prior to Explainable metadata creation.
-    tmpdir = tempfile.mkdtemp()
     nowTime = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
     # Export Keras model in TensorFlow SavedModel format.
-    tf.saved_model.save(model, (hparams['model-dir'] + '/candidate_model_' + nowTime))
-    ouputfile = open("model-dir.txt", "w")
-    ouputfile.write(str(hparams['model-dir'] + '/candidate_model_' + nowTime))
+    save_model_dir = hparams['model-dir'] + '/candidate_model_' + nowTime
+    tf.saved_model.save(model, save_model_dir)
+
+    Path(hparams['output-model-dir']).parent.mkdir(parents=True, exist_ok=True)
+    with open(hparams['output-model-dir'], "w") as output_file:
+        output_file.write(save_model_dir)
