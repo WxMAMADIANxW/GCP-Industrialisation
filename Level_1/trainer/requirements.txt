@@ -1,0 +1,17 @@
+setuptools
+regex
+pickle-mixin
+google-api-python-client
+oauth2client
+gitdb==4.0.7
+GitPython==3.1.14
+google-cloud-storage==1.37.0
+grpcio
+keras==2.3.0
+Keras-Preprocessing==1.1.2
+numpy
+pandas
+fsspec
+gcsfs
+tensorflow==2.3.0
+sklearn

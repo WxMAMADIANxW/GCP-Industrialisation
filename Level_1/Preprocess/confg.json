@@ -1,0 +1,9 @@
+{ "PROJECT_ID": "sound-splicer-351114",
+  "bucket": "sound-splicer-351114-machine-learning",
+  "input-data-uri": "gs://sound-splicer-351114-machine-learning/raw-data/training_data.csv",
+  "uri_data": "raw-data/glove.twitter.27B.50d.txt",
+  "temp-dir": "raw-data/",
+  "input-start-date" : "",
+  "input-end-date" : "",
+  "model-dir" : "level-1-models/temp/processor_state.pkl",
+  "preprocess-data-dir" : "gs://sound-splicer-351114-machine-learning/preprocess-data"}
